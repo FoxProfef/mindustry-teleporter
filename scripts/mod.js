@@ -123,7 +123,6 @@ function entity(a) {
 				var accept = {}
 				
 				this.cacheProximity()
-				
 				for (var i in _proximity) {
 					var block = _proximity[i].block();
 					print(block)
@@ -134,12 +133,11 @@ function entity(a) {
 					
 					
 					for (var i = 0; i < items.size; i++) {
-						print(i)
+						print("Registering item # " + (i + 1) + " of " + items.size)
 						if (acceptAll || (acceptMaterials && items.get(i).type === ItemType.material) || block.consumes.itemFilters.get(i))
 							accept[i] = true
 					}
 				}
-				
 				var ret = []
 				for (var i = 0; i < items.size; i++)
 					if (accept[i]) ret.push(i)
@@ -200,10 +198,10 @@ function entityFromId (id) {
 
 var lastColor = -1
 function Block__tryToOutput(item, myTile, forReal) {
-    var peers = getPeers(entity(myTile), item)
+    var peers = getPeers(entity(myTile), item);
 	if (peers === undefined) return false
 	
-	var now = Time.time()
+	var now = Time.time();
 	if (peers.lastRefusal === now) return false
 	
     var length = peers.ids.length;
@@ -214,7 +212,7 @@ function Block__tryToOutput(item, myTile, forReal) {
             if (forReal) {
                 peers.offset += i + 1;
             } else {
-                peers.offset +=i 
+                peers.offset +=i ;
             }
             return true;
         }
@@ -227,41 +225,45 @@ const teleporter = extendContent(Block, "teleporter", {
     outputsItems: () => true,
 
     acceptItem(item, myTile, srcTile) {
-        return Block__tryToOutput(item, myTile, false);
+		if (entity(myTile).colorCode() != -1) {
+			return Block__tryToOutput(item, myTile, false);
+		}
     },
     
     handleItem(item, myTile, srcTile) {
-        return Block__tryToOutput(item, myTile, true);
+		if (entity(myTile).colorCode() != -1) {
+			return Block__tryToOutput(item, myTile, true);
+		}
     },
     
 	onProximityUpdate(tile) {
-		superInstance.onProximityUpdate(tile)
-		entity(tile).onProximityUpdate(tile)
+		superInstance.onProximityUpdate(tile);
+		entity(tile).onProximityUpdate(tile);
 	},
 
     playerPlaced(tile) {
-        entity(tile).init()
-        tile.configure(lastColor)
+        entity(tile).init();
+        tile.configure(lastColor);
     },
     
     placed(tile) {
-        entity(tile).init()
+        entity(tile).init();
     },
 
     removed(tile) {
-        entity(tile).removed()
+        entity(tile).removed();
     },
     
     update(tile) {
-        entity(tile).update()
+        entity(tile).update();
     },
 	
     configured (tile, player, value){
-        entity(tile).colorCode(value)
+        entity(tile).colorCode(value);
     },
     
     buildConfiguration(tile, table) {
-        var group = new ButtonGroup()
+        var group = new ButtonGroup();
         group.setMinCheckCount(0);
         var cont = new Table();
         cont.defaults().size(38);
@@ -282,12 +284,12 @@ const teleporter = extendContent(Block, "teleporter", {
     },
     drawRequestConfig(req, list) {
         if (req.config === -1) return
-        Draw.color(colorRepresentations[req.config])
+        Draw.color(colorRepresentations[req.config]);
         Draw.rect("center", req.drawx(), req.drawy(), 5, 5);
         Draw.color()
     },
     draw(tile) {
-        superInstance.draw(tile)
+        superInstance.draw(tile);
         if (entity(tile).colorCode() == -1) return
         Draw.color(colorRepresentations[entity(tile).colorCode()]);
         Draw.rect("center", tile.worldx(), tile.worldy(), 5, 5);
